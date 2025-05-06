@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAMUS KOMPETENSI PNS</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 120px;
+            margin-bottom: 15px;
+            resize: vertical;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        #result {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f4f8;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .competency-match {
+            background-color: #fff;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .competency-match h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .level {
+            margin-top: 10px;
+            padding-left: 10px;
+            border-left: 3px solid #27ae60;
+        }
+        
+        .indicators {
+            margin-top: 10px;
+            padding-left: 15px;
+        }
+        
+        .indicators li {
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .indicator-code {
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        
+        .indicator-keywords {
+            font-size: 13px;
+            color: #7f8c8d;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        .keyword-tag {
+            background-color: #e0f7fa;
+            color: #00838f;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: inline-block;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .keyword-highlight {
+            background-color: #fffde7;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        .competency-description {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        
+        /* Gaya baru untuk filter */
+        .filter-section {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .filter-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        #showAllBtn {
+            background-color: #27ae60;
+        }
+        
+        #showAllBtn:hover {
+            background-color: #219653;
+        }
+        
+        #resetBtn {
+            background-color: #e74c3c;
+        }
+        
+        #resetBtn:hover {
+            background-color: #c0392b;
+        }
+        
+        .search-info {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            .filter-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .filter-group {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>KAMUS KOMPETENSI PNS</h1>
+    
+    <div class="container">
+        <div class="filter-section">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="answerInput">Jawaban Asesi:</label>
+                    <textarea id="answerInput" placeholder="Contoh: Saya selalu berkata jujur dan sesuai fakta dalam bekerja..."></textarea>
+                </div>
+            </div>
+            
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="competencyFilter">Kompetensi:</label>
+                    <select id="competencyFilter">
+                        <option value="">Semua Kompetensi</option>
+                        <option value="M.01">M.01 - Integritas</option>
+                        <option value="M.02">M.02 - Kerjasama</option>
+                        <option value="M.03">M.03 - Komunikasi</option>
+                        <option value="M.04">M.04 - Orientasi pada Hasil</option>
+                        <option value="M.05">M.05 - Pelayanan Publik</option>
+                        <option value="M.06">M.06 - Pengembangan Diri dan Orang Lain</option>
+                        <option value="M.07">M.07 - Mengelola Perubahan</option>
+                        <option value="M.08">M.08 - Pengambilan Keputusan</option>
+                        <option value="SK.01">SK.01 - Perekat Bangsa</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="levelFilter">Level:</label>
+                    <select id="levelFilter">
+                        <option value="">Semua Level</option>
+                        <option value="1">Level 1</option>
+                        <option value="2">Level 2</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="keywordSearch">Cari Kata Kunci:</label>
+                    <input type="text" id="keywordSearch" placeholder="Masukkan kata kunci...">
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button id="analyzeBtn">Analisis Kompetensi</button>
+                <button id="showAllBtn">Tampilkan Semua Indikator</button>
+                <button id="resetBtn">Reset Filter</button>
+            </div>
+            
+            <p class="search-info">Anda bisa menggunakan salah satu atau kombinasi filter di atas</p>
+        </div>
+        
+        <div class="loading" id="loadingIndicator">
+            <div class="loading-spinner"></div>
+            <p>Menganalisis jawaban...</p>
+        </div>
+        
+        <div id="result">
+            <h2>Hasil Analisis</h2>
+            <div id="analysisResults"></div>
+        </div>
+    </div>
+
+    <script>
+        // Data kompetensi lengkap dengan semua indikator
+        const competencies = {
+            "M.01": {
+                name: "Integritas",
+                description: "Konsisten berperilaku selaras dengan nilai, norma dan/atau etika organisasi, dan jujur dalam hubungan dengan manajemen, rekan kerja, bawahan langsung, dan pemangku kepentingan, menciptakan budaya etika tinggi, bertanggungjawab atas tindakan atau keputusan beserta risiko yang menyertainya",
+                levels: {
+                    "1": {
+                        description: "Mampu bertindak sesuai nilai, norma, etika organisasi dalam kapasitas pribadi",
+                        indicators: [
+                            {
+                                code: "1.1", 
+                                text: "Bertingkah laku sesuai dengan perkataan; berkata sesuai dengan fakta",
+                                keywords: ["jujur", "sesuai fakta", "konsisten", "perkataan dan perbuatan", "kejujuran", "transparan", "berdasarkan data", "berdasarkan fakta", "objektif", "perkataan dan perbuatan selaras", "berbicara benar", "dapat dipercaya", "menepati janji", "berdasarkan bukti", "bukti"]
+                            },
+                            {
+                                code: "1.2", 
+                                text: "Melaksanakan peraturan, kode etik organisasi dalam lingkungan kerja sehari-hari, pada tataran individu/pribadi",
+                                keywords: ["melaksanakan peraturan", "mematuhi kode etik", "disiplin", "aturan organisasi", "kepatuhan", "standar etika", "kode etik organisasi", "taat aturan", "kode etik"]
+                            },
+                            {
+                                code: "1.3", 
+                                text: "Tidak menjanjikan/memberikan sesuatu yang bertentangan dengan aturan organisasi",
+                                keywords: ["tidak melanggar aturan", "konsisten dengan kebijakan", "menghormati peraturan", "taat regulasi", "integritas", "tidak menyimpang", "anti grativikasi", "memberikan sesuatu"]
+                            }
+                        ]
+                    },
+                    "2": {
+                        description: "Mampu mengingatkan, mengajak rekan kerja untuk bertindak sesuai nilai, norma, dan etika organisasi",
+                        indicators: [
+                            {
+                                code: "2.1", 
+                                text: "Mengingatkan rekan kerja untuk bertindak sesuai dengan nilai, norma, dan etika organisasi dalam segala situasi dan kondisi; Mengajak orang lain untuk bertindak sesuai etika dan kode etik",
+                                keywords: ["mengingatkan", "rekan kerja", "norma organisasi", "etika kerja", "saling mengingatkan", "pembinaan", "mengajak", "keteladanan", "kepedulian", "norma", "kode etik", "pengaruh positif", "proaktif"]
+                            },
+                            {
+                                code: "2.2", 
+                                text: "Menerapkan norma-norma secara konsisten dalam setiap situasi, pada unit kerja terkecil/kelompok kerjanya",
+                                keywords: ["konsisten", "norma", "setiap situasi", "prinsip", "teguh pendirian", "unit kerja", "menerapkan norma secara konsisten"]
+                            },
+                            {
+                                code: "2.3", 
+                                text: "Memberikan informasi yang dapat dipercaya sesuai dengan etika organisasi",
+                                keywords: ["informasi akurat", "dapat dipercaya", "etika informasi", "transparansi", "kejujuran informasi", "valid"]
+                            }
+                        ]
+                    }
+                }
+            },
+            "M.02": {
+                name: "Kerjasama",
+                description: "Kemampuan menjalin, membina, mempertahankan hubungan kerja yang efektif, memiliki komitmen saling membantu dalam penyelesaian tugas, dan mengoptimalkan segala Sumberdaya untuk mencapai tujuan strategis organisasi",
+                levels: {
+                    "1": {
+                        description: "Berpartisipasi dalam kelompok kerja",
+                        indicators: [
+                            {
+                                code: "1.1", 
+                                text: "Berpartisipasi sebagai anggota tim yang baik, melakukan tugas/bagiannya, dan mendukung keputusan tim",
+                                keywords: ["partisipasi", "anggota tim", "tugas", "kontribusi", "peran dalam tim", "dukung keputusan", "kerjasama", "kerjasama tim", "kontribusi", "sinergi dalam kelompok"]
+                            },
+                            {
+                                code: "1.2", 
+                                text: "Mendengarkan dan menghargai masukan dari orang lain dan memberikan usulan-usulan bagi kepentingan tim",
+                                keywords: ["mendengarkan", "menghargai", "masukan", "umpan balik", "respek", "usulan tim", "pendapat", "pendapat orang lain"]
+                            },
+                            {
+                                code: "1.3", 
+                                text: "Mampu menjalin interaksi sosial untuk penyelesaian tugas",
+                                keywords: ["interaksi sosial", "komunikasi", "kolaborasi", "hubungan kerja", "jejaring", "koordinasi", "saling mendukung dalam tugas"]
+                            }
+                        ]
+                    },
+                    "2": {
+                        description: "Menumbuhkan tim kerja yang partisipatif dan efektif",
+                        indicators: [
+                            {
+                                code: "2.1", 
+                                text: "Membantu orang lain dalam menyelesaikan tugas-tugas mereka untuk mendukung sasaran tim",
+                                keywords: ["membantu", "dukungan", "gotong royong", "saling membantu", "tugas bersama", "sasaran tim", "saling membantu"]
+                            },
+                            {
+                                code: "2.2", 
+                                text: "Berbagi informasi yang relevan atau bermanfaat pada anggota tim; mempertimbangkan masukan dan keahlian anggota dalam tim/kelompok kerja serta bersedia untuk belajar dari orang lain",
+                                keywords: ["berbagi informasi", "pengetahuan", "transparansi", "komunikasi terbuka", "saling berbagi", "belajar dari orang lain", "masukan", "keahlian", "berbagi"]
+                            },
+                            {
+                                code: "2.3", 
+                                text: "Membangun komitmen yang tinggi untuk menyelesaikan tugas tim",
+                                keywords: ["komitmen tim", "tanggung jawab bersama", "tujuan tim", "solidaritas", "kerja tim", "sinergi"]
+                            }
+                        ]
+                    }
+                }
+            },
+            "M.03": {
+                name: "Komunikasi",
+                description: "Kemampuan untuk menerangkan pandangan dan gagasan secara jelas, sistematis disertai argumentasi yang logis dengan cara-cara yang sesuai baik secara lisan maupu tertulis; memastikan pemahaman; mendengarkan secara aktif dan efektif; mempersuasi, meyakinkan dan membujuk orang lain dalam rangka mencapai tujuan organisasi",
+                levels: {
+                    "1": {
+                        description: "Menyampaikan informasi dengan jelas, lengkap pemahaman yang sama",
+                        indicators: [
+                            {
+                                code: "1.1", 
+                                text: "Menyampaikan informasi (data), pikiran atau pendapat dengan jelas, singkat dan tepat dengan menggunakan cara/media yang sesuai dan mengikuti alur yang logis",
+                                keywords: ["komunikasi jelas", "singkat", "tepat", "penyampaian informasi", "presisi", "alur logis", "data", "informasi"]
+                            },
+                            {
+                                code: "1.2", 
+                                text: "Memastikan pemahaman yang sama atas instruksi yang diterima/diberikan",
+                                keywords: ["pemahaman", "instruksi", "klarifikasi", "konfirmasi", "kesamaan persepsi", "verifikasi", "pemahaman yang sama"]
+                            },
+                            {
+                                code: "1.3", 
+                                text: "Mampu melaksanakan kegiatan surat menyurat sesuai tata naskah organisasi",
+                                keywords: ["surat menyurat", "tata naskah", "dokumen resmi", "korespondensi", "administrasi", "prosedur", "tata naskah dinas", "surat", "nota dinas"]
+                            }
+                        ]
+                    },
+                    "2": {
+                        description: "Aktif menjalankan komunikasi secara formal dan informal; Bersedia mendengarkan orang lain, menginterpretasikan pesan dengan respon yang sesuai, mampu menyusun Materi presentasi, pidato, naskah, laporan, dll.",
+                        indicators: [
+                            {
+                                code: "2.1", 
+                                text: "Menggunakan gaya komunikasi informal untuk meningkatkan hubungan profesional",
+                                keywords: ["komunikasi informal", "hubungan profesional", "jejaring", "relasi", "interaksi", "pendekatan", "informal", "pendekatan informal"]
+                            },
+                            {
+                                code: "2.2", 
+                                text: "Mendengarkan pihak lain secara aktif; menangkap dan menginterpretasikan pesan-pesan dari orang lain, serta memberikan respon yang sesuai",
+                                keywords: ["mendengarkan aktif", "interpretasi", "empati", "pemahaman", "respon", "feedback", "respon", "memberikan tanggapan", "umpan balik"]
+                            },
+                            {
+                                code: "2.3", 
+                                text: "Membuat materi presentasi, pidato, draft naskah, laporan, dan lain-lain sesuai arahan pimpinan",
+                                keywords: ["presentasi", "pidato", "naskah", "laporan", "dokumentasi", "bahan rapat", "materi", "paparan"]
+                            }
+                        ]
+                    }
+                }
+            },
+            "M.04": {
+                name: "Orientasi pada Hasil",
+                description: "Kemampuan mempertahankan komitmen pribadi yang tinggi untuk Menyelesaikan tugas, dapat diandalkan, bertanggungjawab, mampu secara sistimatis mengidentifikasi risiko dan peluang dengan memperhatikan keterhubungan antara perencanaan dan hasil, untuk keberhasilan organisasi.",
+                levels: {
+                    "1": {
+                        description: "Bertanggung jawab untuk memenuhi standar kerja",
+                        indicators: [
+                            {
+                                code: "1.1", 
+                                text: "Menyelesaikan tugas dengan tuntas dapat diandalkan",
+                                keywords: ["tuntas", "andal", "komitmen", "tanggung jawab", "penyelesaian", "akuntabel", "penyelesaian tugas", "keandalan", "tepat waktu", "diandalkan", "dapat diandalkan"]
+                            },
+                            {
+                                code: "1.2", 
+                                text: "Bekerja dengan teliti dan hati-hati guna meninimalkan kesalahan dengan mengacu pada standar kualitas (SOP)",
+                                keywords: ["teliti", "hati-hati", "minim kesalahan", "standar kualitas", "SOP", "presisi", "standar operasional prosedur", "mengacu pada SOP"]
+                            },
+                            {
+                                code: "1.3", 
+                                text: "Bersedia menerima masukan, mengikuti contoh cara bekerja yang lebih efektif, efisien di Lingkungan Kerjanya",
+                                keywords: ["menerima masukan", "efektif", "efisien", "perbaikan", "adaptasi", "pembelajaran", "mengikuti contoh", "kolaboratif"]
+                            }
+                        ]
+                    },
+                    "2": {
+                        description: "Berupaya meningkatkan hasil kerja pribadi yang lebih tinggi dari standar yang ditetapkan, mencari, mencoba metode alternatif Untuk peningkatan kinerja.",
+                        indicators: [
+                            {
+                                code: "2.1", 
+                                text: "Menetapkan dan berupaya mencapai standar kerja pribadi yang lebih tinggi dari standar kerja yang ditetapkan organisasi",
+                                keywords: ["standar tinggi", "target pribadi", "melebihi ekspektasi", "kinerja unggul", "benchmark", "optimalisasi"]
+                            },
+                            {
+                                code: "2.2", 
+                                text: "Mencari, mencoba metode kerja alternatif untuk meningkatkan hasil kerjanya",
+                                keywords: ["inovasi", "metode alternatif", "perbaikan proses", "efisiensi", "solusi kreatif", "alternatif", "meningkatkan hasil kerja"]
+                            },
+                            {
+                                code: "2.3", 
+                                text: "Memberi contoh kepada orang-orang di unit kerjanya untuk mencoba menerapkan metode kerja yang lebih efektif yang sudah dilakukannya",
+                                keywords: ["contoh baik", "role model", "berbagi praktik baik", "mentoring", "pembelajaran tim", "contoh", "memberi contoh"]
+                            }
+                        ]
+                    }
+                }
+            },
+            "M.05": {
+                name: "Pelayanan Publik",
+                description: "Kemampuan dalam melaksanakan tugas-tugas pemerintahan, pembanguna dan kegiatan pemenuhan kebutuhan pelayanan publik secara profesional, transparan, mengikuti standar pelayanan yang objektif, netral, tidak memihak, tidak diskriminatif, serta tidak terpengaruh kepentingan pribadi/kelompok/golongan/ partai politik",
+                levels: {
+                    "1": {
+                        description: "Menjalankan tugas mengikuti standar pelayanan",
+                        indicators: [
+                            {
+                                code: "1.1", 
+                                text: "Mampu mengerjakan tugas-tugas dengan mengikuti standar pelayanan yang objektif, netral, tidak memihak, tidak diskriminatif, transparan dan tidak terpengaruh kepentingan pribadi/kelompok/partai politik",
+                                keywords: ["objektif", "netral", "tidak diskriminatif", "transparan", "profesional", "adil", "tidak memihak", "tidak terpengaruh"]
+                            },
+                            {
+                                code: "1.2", 
+                                text: "Melayani kebutuhan, permintaan dan keluhan pemangku kepentingan",
+                                keywords: ["pelayanan", "kebutuhan masyarakat", "keluhan", "stakeholder", "responsif", "solutif", "melayani"]
+                            },
+                            {
+                                code: "1.3", 
+                                text: "Menyelesaikan masalah dengan tepat tanpa bersikap membela diri dalam kapasitas sebagai pelaksana pelayanan publik",
+                                keywords: ["penyelesaian masalah", "solusi", "tidak defensif", "pelayanan publik", "fokus solusi", "tidak membela diri"]
+                            }
+                        ]
+                    },
+                    "2": {
+                        description: "Mampu mensupervisi/mengawasi/menyelia dan menjelaskan proses pelaksanaan tugas tugas pemerintahan/pelayana publik secara transparan",
+                        indicators: [
+                            {
+                                code: "2.1", 
+                                text: "Menunjukan sikap yakin dalam mengerjakan tugas-tugas pemerintahan/pelayanan publik, mampu menyelia dan menjelaskan secara obyektif bila ada yang mempertanyakan kebijakan yang diambil",
+                                keywords: ["supervisi", "penjelasan", "kebijakan publik", "keyakinan", "transparansi", "akuntabilitas", "yakin", "menjelaskan", "menyelia"]
+                            },
+                            {
+                                code: "2.2", 
+                                text: "Secara aktif mencari informasi untuk mengenali kebutuhan pemangku kepentingan agar dapat menjalankan pelaksanaan tugas pemerintahan, pembangunan dan pelayanan publik secara cepat dan tanggap",
+                                keywords: ["kebutuhan stakeholder", "respon cepat", "proaktif", "pelayanan prima", "antisipatif", "mencari informasi"]
+                            },
+                            {
+                                code: "2.3", 
+                                text: "Mampu mengenali dan memanfaatkan kebiasaan, tatacara, situasi tertentu sehingga apa yang disampaikan menjadi perhatian pemangku kepentingan dalam hal penyelesaian tugas-tugas pemerintahan, pembangunan dan pelayanan publik",
+                                keywords: ["adaptasi budaya", "konteks lokal", "komunikasi efektif", "pemahaman masyarakat", "pendekatan kultural", "mengenali", "memanfaatkan kebiasaan"]
+                            }
+                        ]
+                    }
+                }
+            },
+            "M.06": {
+                name: "Pengembangan Diri dan Orang Lain",
+                description: "Kemampuan untuk meningkatkan pengetahuan dan menyempurnakan keterampilan diri; menginspirasi orang lain untuk mengembangkan Dan menyempurnakan pengetahuan dan keterampilan yang relevan dengan pekerjaan dan pengembangan karir jangka panjang, mendorong kemauan belajar sepanjang hidup, memberikan saran/bantuan, umpan balik, bimbingan untuk membantu orang lain untuk mengembangkan potensi dirinya",
+                levels: {
+                    "1": {
+                        description: "Pengembangan diri",
+                        indicators: [
+                            {
+                                code: "1.1", 
+                                text: "Mengidentifikasi kebutuhan pengembangan diri dan menyeleksi sumber serta metodologi pembelajaran yang diperlukan",
+                                keywords: ["kebutuhan belajar", "pengembangan diri", "metodologi pembelajaran", "perencanaan pengembangan", "asesmen diri", "sumber belajar", "identifikasi kebutuhan", "metode belajar", "pelatihan", "pelatihan relevan", "belajar mandiri"]
+                            },
+                            {
+                                code: "1.2", 
+                                text: "Menunjukkan usaha mandiri untuk mempelajari keterampilan atau kemampuan baru dari berbagai media pembelajaran",
+                                keywords: ["belajar mandiri", "keterampilan baru", "media pembelajaran", "inisiatif belajar", "peningkatan kompetensi", "usaha mandiri", "belajar aktif", "tutorial"]
+                            },
+                            {
+                                code: "1.3", 
+                                text: "Berupaya meningkatkan diri dengan belajar dari orang-orang lain yang berwawasan luas di dalam organisasi",
+                                keywords: ["belajar dari orang lain", "mentor", "knowledge sharing", "jejaring pembelajaran", "benchmarking", "pengalaman orang lain", "coaching", "belajar pada atasan", "sharing pengetahuan"]
+                            }
+                        ]
+                    },
+                    "2": {
+                        description: "Meningkatkan kemampuan bawahan dengan memberikan contoh dan penjelasan cara melaksanakan suatu pekerjaan",
+                        indicators: [
+                            {
+                                code: "2.1", 
+                                text: "Memberikan contoh, instruksi, penjelasan dan petunjuk praktis yang jelas kepada bawahan dalam menyelesaikan suatu pekerjaan",
+                                keywords: ["pembinaan", "mentoring", "bimbingan", "petunjuk kerja", "role model", "coaching"]
+                            },
+                            {
+                                code: "2.2", 
+                                text: "Membantu bawahan untuk mempelajari proses, program atau sistem baru",
+                                keywords: ["pelatihan", "adaptasi sistem", "transfer pengetahuan", "onboarding", "pendampingan", "membantu bawahan", "bawahan", "pendampingan"]
+                            },
+                            {
+                                code: "2.3", 
+                                text: "Menggunakan metode lain untuk meyakinkan bahwa orang lain telah memahami penjelasan atau pengarahan",
+                                keywords: ["evaluasi pemahaman", "umpan balik", "metode pengajaran", "verifikasi", "assesment", "metode lain", "evaluasi"]
+                            }
+                        ]
+                    }
+                }
+            },
+            "M.07": {
+                name: "Mengelola Perubahan",
+                description: "Kemampuan dalam menyesuaikan diri dengan situasi yang baru atau berubah dan tidak bergantung secara berlebihan pada metode dan proses lama, mengambil tindakan untuk mendukung dan melaksanakan insiatif perubahan, memimpin usah perubahan, mengambil tanggung jawab pribadi untuk memastikan perubahan berhasil diimplementasikan secara efektif",
+                levels: {
+                    "1": {
+                        description: "Mengikuti perubahan dengan arahan",
+                        indicators: [
+                            {
+                                code: "1.1", 
+                                text: "Sadar mengenai perubahan yang terjadi di organisasi dan berusaha menyesuaikan diri dengan perubahan tersebut",
+                                keywords: ["kesadaran perubahan", "adaptasi", "respon perubahan", "fleksibilitas", "kewaspadaan", "menyesuaikan", "perubahan", "menyesuaikan dengan perubahan"]
+                            },
+                            {
+                                code: "1.2", 
+                                text: "Mengikuti perubahan secara terbuka sesuai petunjuk/pedoman",
+                                keywords: ["kepatuhan", "pedoman perubahan", "mengikuti prosedur", "keterbukaan", "arahan", "mengikuti perubahan", "sesuai petunjuk"]
+                            },
+                            {
+                                code: "1.3", 
+                                text: "Menyesuaikan cara kerja lama dengan menerapkan metode/proses baru dengan bimbingan orang lain",
+                                keywords: ["transisi", "pembelajaran", "bimbingan", "adopsi metode baru", "evolusi kerja"]
+                            }
+                        ]
+                    },
+                    "2": {
+                        description: "Proaktif beradaptasi",
+                        indicators: [
+                            {
+                                code: "2.1", 
+                                text: "Menyesuaikan cara kerja lama dengan menerapkan metode/proses baru selaras dengan ketentuan yang berlaku tanpa arahan orang lain",
+                                keywords: ["inisiatif", "adaptasi mandiri", "perubahan proaktif", "inovasi", "self-directed", "metode baru", "tanpa arahan"]
+                            },
+                            {
+                                code: "2.2", 
+                                text: "Mengembangkan kemampuan diri untuk menghadapi perubahan",
+                                keywords: ["pengembangan kompetensi", "kesiapan perubahan", "resiliensi", "agilitas", "peningkatan kapasitas"]
+                            },
+                            {
+                                code: "2.3", 
+                                text: "Cepat dan tanggap dalam menerima perubahan",
+                                keywords: ["responsif", "cepat adaptasi", "fleksibel", "dinamis", "antisipatif"]
+                            }
+                        ]
+                    }
+                }
+            },
+            "M.08": {
+                name: "Pengambilan Keputusan",
+                description: "Kemampuan membuat keputusan yang baik secara tepat waktu dan dengan keyakinan diri setelah mempertimbangkan prinsip kehati-hatian, dirumuskan secara sistematis dan seksama berdasarkan berbagai informasi, alternatif pemecahan masalah dan konsekuensinya, serta bertanggung jawab atas keputusan yang diambil",
+                levels: {
+                    "1": {
+                        description: "Mengumpulkan informasi untuk bertindak sesuai kewenangan",
+                        indicators: [
+                            {
+                                code: "1.1", 
+                                text: "Mengumpulkan dan mempertimbangkan informasi yang dibutuhkan dalam mencari solusi",
+                                keywords: ["pengumpulan data", "riset", "analisis informasi", "fakta", "evidence-based", "mencari solusi"]
+                            },
+                            {
+                                code: "1.2", 
+                                text: "Mengenali situasi/pilihan yang tepat untuk bertindak sesuai kewenangan",
+                                keywords: ["kewenangan", "diskresi", "tindakan tepat", "situasional awareness", "scope of authority", "mengenali pilihan", "mengenali situasi"]
+                            },
+                            {
+                                code: "1.3", 
+                                text: "Mempertimbangkan kemungkinan solusi yang dapat diterapkan dalam pekerjaan rutin berdasarkan kebijakan dan prosedur yang telah ditentukan",
+                                keywords: ["solusi rutin", "prosedural", "kebijakan", "standar operasi", "kepatuhan", "mempertimbangkan", "kemungkinan solusi"]
+                            }
+                        ]
+                    },
+                    "2": {
+                        description: "Menganalisis masalah secara mendalam",
+                        indicators: [
+                            {
+                                code: "2.1", 
+                                text: "Melakukan analisis secara mendalam terhadap informasi yang tersedia dalam upaya mencari solusi",
+                                keywords: ["analisis mendalam", "penyelesaian masalah", "critical thinking", "evaluasi", "diagnosis"]
+                            },
+                            {
+                                code: "2.2", 
+                                text: "Mempertimbangkan berbagai alternatif yang ada sebelum membuat kesimpulan",
+                                keywords: ["alternatif solusi", "pertimbangan", "options analysis", "scenario planning", "keputusan terinformasi"]
+                            },
+                            {
+                                code: "2.3", 
+                                text: "Membuat keputusan operasional berdasarkan kesimpulan dari berbagai sumber informasi sesuai dengan pedoman yang ada",
+                                keywords: ["keputusan operasional", "kesimpulan", "sumber informasi", "pedoman", "implementasi"]
+                            }
+                        ]
+                    }
+                }
+            },
+            "SK.01": {
+                name: "Perekat Bangsa",
+                description: "Kemampuan dalam mempromosikan sikap toleransi, keterbukaan, peka terhadap perbedaan individu/kelompok masyarakat; mampu menjadi perpanjangan tangan pemerintah dalam mempersatukan masyarakat dan membangun hubungan sosial psikologis dengan masyarakat di tengah kemajemukan Indonesia sehingga menciptakan kelekatan yang kuat antara ASN dan para pemangku kepentingan serta diantara para pemangku kepentingan itu sendiri; menjaga, mengembangkan, dan mewujudkan rasa persatuan dan kesatuan dalam kehidupan bermasyarakat, berbangsa dan bernegara Indonesia",
+                levels: {
+                    "1": {
+                        description: "Peka memahami dan menerima kemajemukan",
+                        indicators: [
+                            {
+                                code: "1.1", 
+                                text: "Mampu memahami, menerima, peka terhadap perbedaan individu/kelompok masyarakat",
+                                keywords: ["toleransi", "penerimaan", "kepekaan", "keragaman", "inklusif", "peka terhadap perbedaan"]
+                            },
+                            {
+                                code: "1.2", 
+                                text: "Terbuka, ingin belajar tentang perbedaan/kemajemukan masyarakat",
+                                keywords: ["keterbukaan", "belajar budaya", "kemajemukan", "pluralisme", "dialog"]
+                            },
+                            {
+                                code: "1.3", 
+                                text: "Mampu bekerja bersama dengan individu yang berbeda latar belakang dengannya",
+                                keywords: ["kolaborasi lintas budaya", "kerja tim beragam", "harmoni", "sinergi", "kohesi sosial"]
+                            }
+                        ]
+                    },
+                    "2": {
+                        description: "Aktif mengembangkan sikap saling menghargai, menekankan persamaan dan persatuan",
+                        indicators: [
+                            {
+                                code: "2.1", 
+                                text: "Menampilkan sikap dan perilaku yang peduli akan nilai-nilai keberagaman dan menghargai perbedaan",
+                                keywords: ["nilai kebangsaan", "harmoni sosial", "penghargaan perbedaan", "kesetaraan", "nasionalisme"]
+                            },
+                            {
+                                code: "2.2", 
+                                text: "Membangun hubungan baik antar individu dalam organisasi, mitra kerja, pemangku kepentingan",
+                                keywords: ["jejaring sosial", "relasi positif", "kemitraan", "stakeholder engagement", "bridging"]
+                            },
+                            {
+                                code: "2.3", 
+                                text: "Bersikap tenang, mampu mengendalikan emosi, kemarahan dan frustasi dalam menghadapi pertentangan yang ditimbulkan oleh perbedaan latar belakang agama/kepercayaan, suku, jender, sosial ekonomi, preferensi politik di lingkungan unit kerjanya",
+                                keywords: ["kontrol emosi", "manajemen konflik", "ketenangan", "kesabaran", "resolusi"]
+                            }
+                        ]
+                    }
+                }
+            }
+        };
+
+        // Fungsi untuk menganalisis jawaban dengan filter
+        function analyzeAnswer() {
+            const answer = document.getElementById('answerInput').value.trim().toLowerCase();
+            const competencyFilter = document.getElementById('competencyFilter').value;
+            const levelFilter = document.getElementById('levelFilter').value;
+            const keywordSearch = document.getElementById('keywordSearch').value.trim().toLowerCase();
+
+            if (!answer && !competencyFilter && !levelFilter && !keywordSearch) {
+                alert("Silakan masukkan jawaban asesi atau pilih filter kompetensi/level/kata kunci");
+                return;
+            }
+
+            // Tampilkan loading indicator
+            document.getElementById('loadingIndicator').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+
+            // Simulasikan proses analisis
+            setTimeout(() => {
+                let matches;
+                if (answer || keywordSearch) {
+                    matches = findCompetencyMatches(answer, competencyFilter, levelFilter, keywordSearch);
+                } else {
+                    // Jika tidak ada jawaban, tampilkan semua indikator berdasarkan filter
+                    matches = getAllIndicators(competencyFilter, levelFilter, keywordSearch);
+                }
+                
+                displayResults(matches, answer, keywordSearch);
+                
+                // Sembunyikan loading indicator
+                document.getElementById('loadingIndicator').style.display = 'none';
+                document.getElementById('result').style.display = 'block';
+            }, 500);
+        }
+
+        // Fungsi untuk mendapatkan semua indikator berdasarkan filter
+        function getAllIndicators(competencyFilter, levelFilter, keywordSearch) {
+            const matches = [];
+            
+            // Iterasi melalui semua kompetensi
+            for (const [code, competency] of Object.entries(competencies)) {
+                if (competencyFilter && code !== competencyFilter) continue;
+                
+                // Iterasi melalui semua level
+                for (const [levelNum, level] of Object.entries(competency.levels)) {
+                    if (levelFilter && levelNum !== levelFilter) continue;
+                    
+                    const matchedIndicators = [];
+                    
+                    // Tambahkan semua indikator dalam level ini
+                    for (const indicator of level.indicators) {
+                        // Filter berdasarkan kata kunci jika ada
+                        if (keywordSearch) {
+                            const keywordMatch = indicator.keywords.some(kw => 
+                                kw.toLowerCase().includes(keywordSearch));
+                            const textMatch = indicator.text.toLowerCase().includes(keywordSearch);
+                            
+                            if (!keywordMatch && !textMatch) continue;
+                        }
+                        
+                        matchedIndicators.push({
+                            ...indicator,
+                            matchedKeywords: keywordSearch ? 
+                                indicator.keywords.filter(kw => kw.toLowerCase().includes(keywordSearch)) : []
+                        });
+                    }
+                    
+                    if (matchedIndicators.length > 0) {
+                        matches.push({
+                            code,
+                            competency: competency.name,
+                            level: levelNum,
+                            levelDesc: level.description,
+                            matchedIndicators: matchedIndicators
+                        });
+                    }
+                }
+            }
+            
+            return matches;
+        }
+
+        // Fungsi untuk mencocokkan jawaban dengan kompetensi (dengan filter)
+        function findCompetencyMatches(answer, competencyFilter, levelFilter, keywordSearch) {
+            const matches = [];
+            
+            // Iterasi melalui semua kompetensi
+            for (const [code, competency] of Object.entries(competencies)) {
+                if (competencyFilter && code !== competencyFilter) continue;
+                
+                // Iterasi melalui semua level
+                for (const [levelNum, level] of Object.entries(competency.levels)) {
+                    if (levelFilter && levelNum !== levelFilter) continue;
+                    
+                    const matchedIndicators = [];
+                    
+                    // Cek setiap indikator dalam level
+                    for (const indicator of level.indicators) {
+                        const matchedKeywords = [];
+                        
+                        // Cek kecocokan dengan kata kunci indikator
+                        for (const keyword of indicator.keywords) {
+                            if (answer && answer.includes(keyword.toLowerCase())) {
+                                matchedKeywords.push(keyword);
+                            }
+                            if (keywordSearch && keyword.toLowerCase().includes(keywordSearch)) {
+                                matchedKeywords.push(keyword);
+                            }
+                        }
+                        
+                        // Cek kecocokan dengan teks indikator
+                        const indicatorWords = indicator.text.toLowerCase().split(/[\s,.;]+/);
+                        let wordMatches = 0;
+                        
+                        if (answer) {
+                            for (const word of indicatorWords) {
+                                if (word.length > 3 && answer.includes(word)) {
+                                    wordMatches++;
+                                }
+                            }
+                        }
+                        
+                        // Cek pencarian kata kunci dalam teks indikator
+                        const keywordTextMatch = keywordSearch && 
+                            indicator.text.toLowerCase().includes(keywordSearch);
+                        
+                        // Jika indikator ini cocok
+                        if (matchedKeywords.length > 0 || wordMatches >= indicatorWords.length * 0.4 || keywordTextMatch) {
+                            matchedIndicators.push({
+                                ...indicator,
+                                matchedKeywords: matchedKeywords.length > 0 ? matchedKeywords : 
+                                    (keywordSearch ? indicator.keywords.filter(kw => 
+                                        kw.toLowerCase().includes(keywordSearch)) : [])
+                            });
+                        }
+                    }
+                    
+                    // Jika level ini memiliki kecocokan
+                    if (matchedIndicators.length > 0) {
+                        matches.push({
+                            code,
+                            competency: competency.name,
+                            level: levelNum,
+                            levelDesc: level.description,
+                            matchedIndicators: matchedIndicators
+                        });
+                    }
+                }
+            }
+            
+            return matches;
+        }
+
+        // Fungsi untuk menampilkan semua indikator
+        function showAllIndicators() {
+            const competencyFilter = document.getElementById('competencyFilter').value;
+            const levelFilter = document.getElementById('levelFilter').value;
+            const keywordSearch = document.getElementById('keywordSearch').value.trim().toLowerCase();
+
+            // Tampilkan loading indicator
+            document.getElementById('loadingIndicator').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+
+            // Simulasikan proses
+            setTimeout(() => {
+                const matches = getAllIndicators(competencyFilter, levelFilter, keywordSearch);
+                displayResults(matches, '', keywordSearch);
+                
+                // Sembunyikan loading indicator
+                document.getElementById('loadingIndicator').style.display = 'none';
+                document.getElementById('result').style.display = 'block';
+            }, 300);
+        }
+
+        // Fungsi untuk mereset filter
+        function resetFilters() {
+            document.getElementById('answerInput').value = '';
+            document.getElementById('competencyFilter').value = '';
+            document.getElementById('levelFilter').value = '';
+            document.getElementById('keywordSearch').value = '';
+            document.getElementById('result').style.display = 'none';
+        }
+
+        // Fungsi untuk menampilkan hasil analisis
+        function displayResults(matches, answer, keywordSearch) {
+            const resultsContainer = document.getElementById('analysisResults');
+            resultsContainer.innerHTML = '';
+            
+            if (matches.length === 0) {
+                resultsContainer.innerHTML = '<p>Tidak ditemukan kecocokan dengan kriteria yang dipilih. Coba gunakan filter yang berbeda.</p>';
+                return;
+            }
+            
+            // Hitung total indikator yang cocok
+            const totalIndicators = matches.reduce((sum, match) => sum + match.matchedIndicators.length, 0);
+            
+            // Highlight kata kunci dalam jawaban
+            let highlightedAnswer = answer;
+            const allKeywords = new Set();
+            
+            matches.forEach(match => {
+                match.matchedIndicators.forEach(ind => {
+                    ind.matchedKeywords.forEach(kw => {
+                        allKeywords.add(kw.toLowerCase());
+                    });
+                });
+            });
+            
+            if (answer) {
+                allKeywords.forEach(kw => {
+                    const regex = new RegExp(kw, 'gi');
+                    highlightedAnswer = highlightedAnswer.replace(regex, 
+                        `<span class="keyword-highlight">$&</span>`);
+                });
+            }
+            
+            // Buat header hasil
+            let headerHtml = `
+                <p><strong>Hasil Pencarian:</strong> Ditemukan ${matches.length} kompetensi dengan total ${totalIndicators} indikator</p>
+            `;
+            
+            if (answer) {
+                headerHtml += `
+                    <p><strong>Jawaban yang dianalisis:</strong></p>
+                    <blockquote>${highlightedAnswer || 'Tidak ada jawaban yang dimasukkan'}</blockquote>
+                `;
+            }
+            
+            if (keywordSearch) {
+                headerHtml += `
+                    <p><strong>Kata kunci yang dicari:</strong> "${keywordSearch}"</p>
+                `;
+            }
+            
+            resultsContainer.innerHTML = headerHtml;
+            
+            // Tampilkan setiap kecocokan
+            matches.forEach(match => {
+                const matchElement = document.createElement('div');
+                matchElement.className = 'competency-match';
+                
+                let indicatorsHtml = '<ul>';
+                
+                match.matchedIndicators.forEach(ind => {
+                    // Highlight kata kunci dalam indikator
+                    let highlightedText = ind.text;
+                    
+                    // Highlight kata kunci dari pencarian
+                    if (keywordSearch) {
+                        const regex = new RegExp(keywordSearch, 'gi');
+                        highlightedText = highlightedText.replace(regex, 
+                            `<span class="keyword-highlight">$&</span>`);
+                    }
+                    
+                    // Highlight kata kunci yang cocok dari jawaban
+                    ind.matchedKeywords.forEach(kw => {
+                        const regex = new RegExp(kw, 'gi');
+                        highlightedText = highlightedText.replace(regex, 
+                            `<span class="keyword-highlight">$&</span>`);
+                    });
+                    
+                    // Buat daftar kata kunci yang cocok
+                    const keywordsHtml = ind.matchedKeywords.map(kw => 
+                        `<span class="keyword-tag">${kw}</span>`).join(' ');
+                    
+                    indicatorsHtml += `
+                        <li>
+                            <span class="indicator-code">${ind.code}</span>
+                            ${highlightedText}
+                            <div class="indicator-keywords">
+                                <strong>Kata kunci terkait:</strong> ${keywordsHtml || 'Tidak ada kata kunci yang cocok'}
+                            </div>
+                        </li>`;
+                });
+                
+                indicatorsHtml += '</ul>';
+                
+                matchElement.innerHTML = `
+                    <h3>${match.code} ${match.competency}</h3>
+                    <div class="competency-description">${competencies[match.code].description}</div>
+                    <div class="level">
+                        <p><strong>Level ${match.level}:</strong> ${match.levelDesc}</p>
+                        <div class="indicators">
+                            <p><strong>Indikator Perilaku:</strong></p>
+                            ${indicatorsHtml}
+                        </div>
+                    </div>
+                `;
+                
+                resultsContainer.appendChild(matchElement);
+            });
+        }
+
+        // Event listener untuk tombol analisis
+        document.getElementById('analyzeBtn').addEventListener('click', analyzeAnswer);
+        document.getElementById('showAllBtn').addEventListener('click', showAllIndicators);
+        document.getElementById('resetBtn').addEventListener('click', resetFilters);
+        
+        // Juga bisa menggunakan Enter di textarea
+        document.getElementById('answerInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                analyzeAnswer();
+            }
+        });
+        
+        // Juga bisa menggunakan Enter di input pencarian kata kunci
+        document.getElementById('keywordSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                analyzeAnswer();
+            }
+        });
+    </script>
+</body>
+</html>
